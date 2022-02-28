@@ -7,11 +7,6 @@ import { createImage } from './images.controller';
 
 const imagesRouter = express.Router();
 
-imagesRouter.get('/', (req, res) => {
-  console.log('hola');
-  res.send('hola que tal');
-});
-
 imagesRouter.post('/', upload.single('image'), createImage);
 
 export default imagesRouter;
