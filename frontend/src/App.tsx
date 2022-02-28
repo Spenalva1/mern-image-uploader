@@ -1,5 +1,7 @@
 import { Center, VStack } from '@chakra-ui/react';
 import { useCallback, useState } from 'react';
+import { uploadImage } from './api';
+import environment from './environment/environment';
 import Success from './Success';
 import Upload from './Upload';
 import Uploading from './Uploading';
@@ -8,22 +10,19 @@ function App() {
   const [state, setState] = useState<'upload' | 'uploading' | 'success'>(
     'upload'
   );
-  const [uploadedFile, setUploadedFile] = useState<string | ArrayBuffer | null>(
-    null
-  );
+  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
-  const onFileUpload = useCallback((file: File) => {
+  const onFileUpload = useCallback(async (file: File) => {
     setState('uploading');
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setUploadedFile(e.target?.result || null);
-    };
-    reader.readAsDataURL(file);
-
-    setTimeout(() => {
+    try {
+      const response = await uploadImage(file);
+      setUploadedImage(`${environment.api}/${response.data.image}`);
       setState('success');
-    }, 1000);
+    } catch (error) {
+      setState('upload');
+      console.error(error);
+    }
   }, []);
 
   return (
@@ -44,7 +43,7 @@ function App() {
       >
         {state === 'upload' && <Upload onFileUpload={onFileUpload} />}
         {state === 'uploading' && <Uploading />}
-        {state === 'success' && <Success image={uploadedFile} />}
+        {state === 'success' && <Success image={uploadedImage} />}
       </VStack>
     </Center>
   );

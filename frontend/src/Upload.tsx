@@ -1,5 +1,5 @@
 import { Button, Input, Text, VStack, Img } from '@chakra-ui/react';
-import { DragEvent, useCallback } from 'react';
+import { ChangeEvent, DragEvent, useCallback } from 'react';
 import dndImg from './assets/dnd.svg';
 import './styles.css';
 
@@ -17,7 +17,6 @@ function Upload({ onFileUpload }: UploadProps) {
       const image = e.dataTransfer.items[0];
       if (!image) return;
       if (!ACCEPTED_TYPES.some((type) => type === image.type)) {
-        console.log('nopppp');
         return;
       }
       const file = image.getAsFile();
@@ -30,9 +29,19 @@ function Upload({ onFileUpload }: UploadProps) {
   const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    // console.log(e.dataTransfer);
-    // console.log(e);
   }, []);
+
+  const onFileChosen = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (!e.target.files) return;
+      const file = e.target.files[0];
+      if (!ACCEPTED_TYPES.some((type) => type === file.type)) {
+        return;
+      }
+      onFileUpload(file);
+    },
+    [onFileUpload]
+  );
 
   return (
     <>
@@ -63,7 +72,7 @@ function Upload({ onFileUpload }: UploadProps) {
       <Button as="label" htmlFor="file" colorScheme="blue">
         Choose a file
       </Button>
-      <Input display="none" type="file" id="file" />
+      <Input onChange={onFileChosen} display="none" type="file" id="file" />
     </>
   );
 }

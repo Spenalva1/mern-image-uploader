@@ -1,29 +1,26 @@
-import { CheckCircleIcon, CheckIcon } from '@chakra-ui/icons';
+import { CheckCircleIcon } from '@chakra-ui/icons';
 import { Button, HStack, Img, Text } from '@chakra-ui/react';
 import copy from 'copy-to-clipboard';
-import img from './assets/dnd.svg';
 
 interface SuccessProps {
-  image: string | ArrayBuffer | null;
+  image: string | null;
 }
 
 function Success({ image }: SuccessProps) {
-  const imageUrl =
-    'Lorem ipsum dolor sit amet consectetur adipisicing elit. A vel asdf asdf';
-
   return (
     <>
       <CheckCircleIcon color="#219653" w="35px" h="35px" />
       <Text as="h2" fontSize="xl" color="#4F4F4F">
         Uploaded Successfully!
       </Text>
-      <Img src={String(image) || img} />
+      {image && <Img src={image} />}
       <HStack
         p="5px"
         pl="10px"
         background="#F6F8FB"
         maxWidth="100%"
         borderRadius="12"
+        spacing={4}
       >
         <Text
           textOverflow="ellipsis"
@@ -31,13 +28,15 @@ function Success({ image }: SuccessProps) {
           whiteSpace="nowrap"
           fontSize="xs"
         >
-          {imageUrl}
+          {image}
         </Text>
         <Button
+          disabled={!image}
           size="sm"
+          px="4"
           colorScheme="blue"
           onClick={() => {
-            copy(imageUrl);
+            copy(String(image));
           }}
         >
           Copy link
